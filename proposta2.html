@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protótipo de Filtros Fixos - Busca de Produtos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .main-tab-active {
+            border-bottom-color: #2563EB;
+            color: #2563EB;
+            background-color: #EFF6FF;
+        }
+        .filter-sidebar {
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 96px);
+            overflow-y: auto;
+        }
+        .filter-sidebar::-webkit-scrollbar { width: 8px; }
+        .filter-sidebar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .filter-sidebar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .filter-sidebar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        
+        .annotation {
+            position: absolute;
+            background-color: rgba(30, 64, 175, 0.9);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            width: 280px;
+            font-size: 14px;
+            line-height: 1.5;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .annotation-dot:hover + .annotation {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .annotation-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 6px;
+            color: #93C5FD;
+        }
+        .annotation-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: #2563EB;
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 5;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+        }
+        .annotation-target {
+            position: relative;
+        }
+        .product-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .filter-section {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .filter-section:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-200">
+
+    <header class="bg-gray-800 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto">
+            <div class="flex items-center gap-4">
+                <h1 class="text-2xl font-bold">amazon<span class="text-orange-500">.com.br</span></h1>
+                <div class="flex-1 max-w-2xl">
+                    <div class="flex">
+                        <input type="text" value="Fone de ouvido" class="flex-1 px-4 py-2 rounded-l-lg text-gray-800" readonly>
+                        <button class="bg-orange-500 px-6 py-2 rounded-r-lg hover:bg-orange-600">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto p-4 md:p-8">
+        <div class="flex border-b-2 border-gray-300 mb-6 bg-white rounded-t-lg">
+            <button class="main-tab-button main-tab-active flex-1 py-3 px-4 font-semibold text-gray-600 text-center transition-colors duration-200" onclick="openMainTab(event, 'prototype')">
+                <i class="fas fa-desktop mr-2"></i>Protótipo da Página
+            </button>
+            <button class="main-tab-button flex-1 py-3 px-4 font-semibold text-gray-600 text-center transition-colors duration-200" onclick="openMainTab(event, 'analysis')">
+                <i class="fas fa-magnifying-glass-chart mr-2"></i>Análise de UX/UI
+            </button>
+        </div>
+
+        <div id="prototype" class="main-tab-content">
+        </div>
+
+        <div id="analysis" class="main-tab-content hidden">
+        </div>
+    </div>
+
+    <script>
+        function generateSearchContent(includeAnnotations = false) {
+            return `
+            <div class="bg-white p-4 rounded-lg mb-4">
+                <p class="text-sm text-gray-600">1-48 de mais de 40.000 resultados para <span class="font-semibold text-gray-800">"Fone de ouvido"</span></p>
+            </div>
+
+            <div class="flex gap-6">
+                <aside class="w-72 flex-shrink-0 relative">
+                    ${includeAnnotations ? `
+                        <div class="annotation-dot" style="position: absolute; top: 50%; right: -8px;"></div>
+                        <div class="annotation" style="position: absolute; top: 50%; left: 310px; transform: translateY(-50%);">
+                            <span class="annotation-title">Sidebar Fixo (Sticky)</span>
+                            A barra lateral permanece sempre visível enquanto o usuário navega pelos produtos, eliminando a necessidade de rolar até o topo para ajustar filtros. Isso reduz significativamente o esforço cognitivo e físico (Lei de Fitts).
+                        </div>
+                        <div class="annotation-dot" style="position: absolute; top: 20%; right: -8px;"></div>
+                        <div class="annotation" style="position: absolute; top: 20%; left: 310px;">
+                            <span class="annotation-title">Scroll Independente</span>
+                            A barra de filtros possui seu próprio scroll, permitindo que o usuário explore todas as opções de filtro sem perder a posição na lista de produtos. Isso implementa o princípio de Divulgação Progressiva mantendo o contexto.
+                        </div>
+                        <div class="annotation-dot" style="position: absolute; top: 35%; right: -8px;"></div>
+                        <div class="annotation" style="position: absolute; top: 35%; left: 310px;">
+                            <span class="annotation-title">Localização Previsível</span>
+                            Filtros mantêm posição fixa e previsível na tela (Lei de Fitts), facilitando acesso rápido. Usuários não precisam reaprender a localização dos controles a cada scroll.
+                        </div>` : ''}
+                    <div class="filter-sidebar bg-white p-4 rounded-lg">
+                        <h2 class="text-lg font-bold mb-4 text-gray-800">Filtros</h2>
+                        
+                        <div class="filter-section py-4">
+                            <h3 class="font-semibold text-gray-800 mb-3">Elegível a Frete Grátis</h3>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                <span class="text-sm text-gray-700">Frete Grátis em envios pela Amazon</span>
+                            </label>
+                        </div>
+
+                        <div class="filter-section py-4">
+                            <h3 class="font-semibold text-gray-800 mb-3">Preço</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Até R$70</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">R$70 a R$100</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">R$100 a R$150</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">R$150 a R$200</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Mais de R$200</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-section py-4">
+                            <h3 class="font-semibold text-gray-800 mb-3">Avaliações de Clientes</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <div class="flex text-yellow-500 text-sm">
+                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                    </div>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <div class="flex text-yellow-500 text-sm">
+                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                    </div>
+                                    <span class="text-sm text-gray-700 ml-2">e acima</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-section py-4">
+                            <h3 class="font-semibold text-gray-800 mb-3">Marcas</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Philips</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">JBL</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Samsung</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Sony</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Apple</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Xiaomi</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-section py-4">
+                            <h3 class="font-semibold text-gray-800 mb-3">Conectividade</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Bluetooth</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Com fio</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-section py-4">
+                            <h3 class="font-semibold text-gray-800 mb-3">Tipo</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">In-ear</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Over-ear</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">TWS (True Wireless)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-section py-4">
+                            <h3 class="font-semibold text-gray-800 mb-3">Cancelamento de Ruído</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Ativo (ANC)</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 mr-2">
+                                    <span class="text-sm text-gray-700">Passivo</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="flex-1 relative">
+                    ${includeAnnotations ? `
+                        <div class="annotation-dot" style="position: absolute; top: 150px; left: 20px; z-index: 10;"></div>
+                        <div class="annotation" style="position: absolute; top: 150px; right: calc(100% - 12px); transform: translateY(-50%); z-index: 10;">
+                            <span class="annotation-title">Foco no Conteúdo</span>
+                            Com filtros sempre acessíveis, usuários podem focar em explorar produtos sem interrupções. A grade responsiva adapta-se ao espaço disponível, mantendo densidade visual adequada.
+                        </div>` : ''}
+                    <div class="bg-white p-4 rounded-lg mb-4 flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Classificar por:</span>
+                        <select class="border border-gray-300 rounded px-3 py-2 text-sm">
+                            <option>Em destaque</option>
+                            <option>Preço: Do menor para o maior</option>
+                            <option>Preço: Do maior para o menor</option>
+                            <option>Méd. Avaliações de clientes</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${generateProductCards()}
+                    </div>
+                </main>
+            </div>
+            `;
+        }
+
+        function generateProductCards() {
+            const products = [
+                {
+                    name: 'PHILIPS, Fone de Ouvido com Microfone, TAUE101BK/00',
+                    desc: 'Com fio de 1,2 metros, intra-auricular, Preto',
+                    price: 'R$ 25,99',
+                    rating: 4.5,
+                    reviews: '30,8 mil',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/f3f4f6/333?text=Philips+In-Ear'
+                },
+                {
+                    name: 'JBL, Fone de Ouvido in Ear, C50HI',
+                    desc: 'Preto, com microfone',
+                    price: 'R$ 47,46',
+                    rating: 4.6,
+                    reviews: '67,5 mil',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/e5e7eb/333?text=JBL+C50HI'
+                },
+                {
+                    name: 'PHILIPS, Fone de Ouvido Sem Fio TWS',
+                    desc: 'TAT1109BK/00, Bluetooth, Até 24h bateria',
+                    price: 'R$ 125,10',
+                    originalPrice: 'R$ 139,00',
+                    rating: 4.6,
+                    reviews: '3,9 mil',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/d1d5db/333?text=Philips+TWS'
+                },
+                {
+                    name: 'PHILIPS, Headphone Bluetooth, TAH2300BK/00',
+                    desc: 'Com Microfone, Até 55 horas de bateria, Over-ear',
+                    price: 'R$ 149,00',
+                    rating: 4.4,
+                    reviews: '12',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/9ca3af/fff?text=Philips+Headphone'
+                },
+                {
+                    name: 'Fones de Ouvido Bluetooth 5.3',
+                    desc: '42 Horas, IPX5 à Prova d\'água, Esportivos',
+                    price: 'R$ 89,90',
+                    rating: 4.3,
+                    reviews: '856',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/6b7280/fff?text=Sport+BT'
+                },
+                {
+                    name: 'Samsung Galaxy Buds2 Pro',
+                    desc: 'Fone TWS com ANC, Som 360°',
+                    price: 'R$ 899,00',
+                    originalPrice: 'R$ 1.199,00',
+                    rating: 4.7,
+                    reviews: '2,4 mil',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/f3f4f6/333?text=Galaxy+Buds2'
+                },
+                {
+                    name: 'Sony WH-1000XM5',
+                    desc: 'Headphone Premium, ANC de alto nível',
+                    price: 'R$ 1.899,00',
+                    rating: 4.8,
+                    reviews: '5,2 mil',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/e5e7eb/333?text=Sony+WH'
+                },
+                {
+                    name: 'Apple AirPods Pro (2ª geração)',
+                    desc: 'ANC, Áudio espacial, Case MagSafe',
+                    price: 'R$ 2.199,00',
+                    rating: 4.9,
+                    reviews: '8,3 mil',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/d1d5db/333?text=AirPods+Pro'
+                },
+                {
+                    name: 'JBL Tune 510BT',
+                    desc: 'Fone Bluetooth On-Ear, 40h de bateria',
+                    price: 'R$ 189,00',
+                    originalPrice: 'R$ 249,00',
+                    rating: 4.5,
+                    reviews: '1,2 mil',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/9ca3af/fff?text=JBL+510BT'
+                },
+                {
+                    name: 'Xiaomi Redmi Buds 4 Pro',
+                    desc: 'TWS com ANC, 36h de bateria total',
+                    price: 'R$ 349,00',
+                    rating: 4.4,
+                    reviews: '743',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/6b7280/fff?text=Xiaomi+Buds'
+                },
+                {
+                    name: 'Edifier W820NB Plus',
+                    desc: 'ANC Híbrido, 49h de bateria',
+                    price: 'R$ 299,00',
+                    rating: 4.6,
+                    reviews: '524',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/f3f4f6/333?text=Edifier+W820'
+                },
+                {
+                    name: 'Soundcore by Anker Life Q30',
+                    desc: 'ANC Múltiplos Modos, 40h bateria',
+                    price: 'R$ 399,00',
+                    originalPrice: 'R$ 549,00',
+                    rating: 4.7,
+                    reviews: '3,1 mil',
+                    freeShipping: true,
+                    image: 'https://placehold.co/300x300/e5e7eb/333?text=Soundcore+Q30'
+                }
+            ];
+
+            const products3x = [...products, ...products, ...products];
+
+            return products3x.map(product => `
+                <div class="product-card bg-white p-4 rounded-lg shadow hover:shadow-lg cursor-pointer">
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-3">
+                    <h3 class="text-sm font-semibold text-blue-600 hover:underline mb-1">${product.name}</h3>
+                    <p class="text-xs text-gray-600 mb-2">${product.desc}</p>
+                    <div class="flex items-center mb-2">
+                        <div class="flex text-yellow-500 text-sm">
+                            ${generateStars(product.rating)}
+                        </div>
+                        <span class="text-xs text-blue-600 hover:underline ml-2">${product.reviews}</span>
+                    </div>
+                    <div class="mb-2">
+                        ${product.originalPrice ? `<span class="text-xs text-gray-500 line-through">${product.originalPrice}</span>` : ''}
+                        <p class="text-xl font-bold text-gray-800">${product.price}</p>
+                    </div>
+                    ${product.freeShipping ? '<span class="text-xs text-green-600 font-semibold">Frete GRÁTIS</span>' : ''}
+                </div>
+            `).join('');
+        }
+
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+            let stars = '';
+            
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<i class="fas fa-star"></i>';
+            }
+            if (hasHalfStar) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            }
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            for (let i = 0; i < emptyStars; i++) {
+                stars += '<i class="far fa-star"></i>';
+            }
+            return stars;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('prototype').innerHTML = generateSearchContent();
+            document.getElementById('analysis').innerHTML = generateSearchContent(true);
+        });
+
+        function openMainTab(event, tabName) {
+            document.querySelectorAll('.main-tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.main-tab-button').forEach(b => b.classList.remove('main-tab-active'));
+            document.getElementById(tabName).classList.remove('hidden');
+            event.currentTarget.classList.add('main-tab-active');
+        }
+    </script>
+</body>
+</html>
+
