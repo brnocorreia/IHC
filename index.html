@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Protótipos de UX/UI - E-commerce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .proposal-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .proposal-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+      .tag {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 8px;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-200 min-h-screen">
+    <header class="bg-gray-800 text-white p-6 shadow-md">
+      <div class="container mx-auto">
+        <h1 class="text-3xl font-bold mb-2">
+          amazon<span class="text-orange-500">.com.br</span>
+        </h1>
+        <p class="text-gray-300 text-sm">
+          Análise e Protótipos de UX/UI para E-commerce
+        </p>
+      </div>
+    </header>
+
+    <div class="container mx-auto p-8 md:p-12">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold text-gray-800 mb-4">
+          Protótipos de Experiência do Usuário
+        </h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          Explore duas propostas de melhorias de interface para e-commerce,
+          baseadas em princípios de UX/UI e análise de padrões de interação do
+          usuário.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div
+          class="proposal-card bg-white rounded-xl shadow-lg overflow-hidden"
+        >
+          <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-2xl font-bold text-white">Proposta 1</h3>
+              <i
+                class="fas fa-shopping-cart text-white text-3xl opacity-75"
+              ></i>
+            </div>
+            <p class="text-blue-100 text-sm">Página de Produto</p>
+          </div>
+
+          <div class="p-6">
+            <h4 class="text-xl font-bold text-gray-800 mb-4">
+              Otimização da Página de Produto
+            </h4>
+
+            <p class="text-gray-700 mb-4 leading-relaxed">
+              Protótipo focado na experiência de visualização e compra de um
+              produto individual, aplicando princípios fundamentais de UX/UI
+              para maximizar conversão e satisfação do usuário.
+            </p>
+
+            <div class="mb-6">
+              <h5 class="font-semibold text-gray-800 mb-3">
+                Conceitos Aplicados:
+              </h5>
+              <div class="flex flex-wrap">
+                <span class="tag bg-blue-100 text-blue-700">Lei de Fitts</span>
+                <span class="tag bg-purple-100 text-purple-700"
+                  >Hierarquia Visual</span
+                >
+                <span class="tag bg-green-100 text-green-700"
+                  >Prova Social</span
+                >
+                <span class="tag bg-orange-100 text-orange-700"
+                  >Efeito Von Restorff</span
+                >
+                <span class="tag bg-pink-100 text-pink-700"
+                  >Divulgação Progressiva</span
+                >
+                <span class="tag bg-yellow-100 text-yellow-700"
+                  >Redução de Carga Cognitiva</span
+                >
+              </div>
+            </div>
+
+            <div class="mb-6">
+              <h5 class="font-semibold text-gray-800 mb-2">Características:</h5>
+              <ul class="space-y-2 text-gray-700">
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                  <span>Galeria de imagens interativa com feedback visual</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                  <span>Hierarquia clara de informações essenciais</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                  <span>CTAs destacados com cores contrastantes</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                  <span>Abas para organização de detalhes complexos</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                  <span>Seções de cross-selling e recomendações</span>
+                </li>
+              </ul>
+            </div>
+
+            <a
+              href="proposta1.html"
+              class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-colors duration-200"
+            >
+              <i class="fas fa-external-link-alt mr-2"></i>Visualizar Protótipo
+            </a>
+          </div>
+        </div>
+
+        <div
+          class="proposal-card bg-white rounded-xl shadow-lg overflow-hidden"
+        >
+          <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-2xl font-bold text-white">Proposta 2</h3>
+              <i class="fas fa-filter text-white text-3xl opacity-75"></i>
+            </div>
+            <p class="text-orange-100 text-sm">Página de Busca com Filtros</p>
+          </div>
+
+          <div class="p-6">
+            <h4 class="text-xl font-bold text-gray-800 mb-4">
+              Filtros Fixos em Barra Lateral
+            </h4>
+
+            <p class="text-gray-700 mb-4 leading-relaxed">
+              Solução para o problema de acessibilidade dos filtros em listas
+              longas de produtos. O sidebar permanece sempre visível, eliminando
+              a necessidade de rolar até o topo da página.
+            </p>
+
+            <div class="mb-6">
+              <h5 class="font-semibold text-gray-800 mb-3">
+                Conceitos Aplicados:
+              </h5>
+              <div class="flex flex-wrap">
+                <span class="tag bg-blue-100 text-blue-700"
+                  >Sticky Positioning</span
+                >
+                <span class="tag bg-purple-100 text-purple-700"
+                  >Lei de Fitts</span
+                >
+                <span class="tag bg-green-100 text-green-700"
+                  >Scroll Independente</span
+                >
+                <span class="tag bg-orange-100 text-orange-700"
+                  >Localização Previsível</span
+                >
+                <span class="tag bg-pink-100 text-pink-700"
+                  >Redução de Carga Cognitiva</span
+                >
+              </div>
+            </div>
+
+            <div class="mb-6">
+              <h5 class="font-semibold text-gray-800 mb-2">Características:</h5>
+              <ul class="space-y-2 text-gray-700">
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                  <span>Sidebar de filtros sempre visível durante scroll</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                  <span>Scroll independente para navegação de filtros</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                  <span>Elimina necessidade de voltar ao topo</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                  <span>Grade responsiva de produtos</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                  <span>Múltiplas categorias de filtros organizadas</span>
+                </li>
+              </ul>
+            </div>
+
+            <a
+              href="proposta2.html"
+              class="block w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-colors duration-200"
+            >
+              <i class="fas fa-external-link-alt mr-2"></i>Visualizar Protótipo
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-16 max-w-4xl mx-auto">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-lightbulb text-yellow-500 mr-3"></i>
+            Sobre os Protótipos
+          </h3>
+          <div class="space-y-4 text-gray-700 leading-relaxed text-justify">
+            <p>
+              Estes protótipos foram desenvolvidos pelos alunos
+              <strong
+                >Anna Miranda, Bruno Correia, Eduardo Lima, Jorge Souza e
+                Matheus Quevedo</strong
+              >
+              como parte de uma tarefa da disciplina
+              <strong>Interação Humano-Computador (MATC72)</strong> da
+              Universidade Federal da Bahia, sob orientação do professor
+              <strong>Igor Sobral Muniz</strong>, focando em melhorias práticas
+              de UX/UI para a plataforma Amazon (Desktop).
+            </p>
+            <p>
+              Cada proposta é apresentada em duas versões: um
+              <strong>protótipo interativo</strong> para experimentação direta e
+              uma <strong>versão anotada</strong> que explica os princípios de
+              design aplicados através de tooltips informativos.
+            </p>
+            <p>
+              <strong>Como explorar:</strong> Acesse cada protótipo, alterne
+              entre as abas "Protótipo da Página" e "Análise de UX/UI", e passe
+              o mouse sobre os pontos azuis para ver as explicações dos
+              conceitos aplicados.
+            </p>
+          </div>
+
+          <div
+            class="mt-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500"
+          >
+            <p class="text-sm text-blue-800">
+              <i class="fas fa-info-circle mr-2"></i>
+              <strong>Dica:</strong> Na aba "Análise de UX/UI" da Proposta 2,
+              role a página até o final para observar o comportamento do sidebar
+              fixo em ação.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="bg-gray-800 text-gray-300 py-8 mt-16">
+      <div class="container mx-auto text-center">
+        <p class="mb-2">Protótipos de UX/UI - Análise de E-commerce</p>
+        <p class="text-sm text-gray-400">
+          Desenvolvido como estudo de Interação Humano-Computador
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
