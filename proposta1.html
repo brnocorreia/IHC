@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protótipo e Análise de UX da Página de Produto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .main-tab-active {
+            border-bottom-color: #2563EB;
+            color: #2563EB;
+            background-color: #EFF6FF;
+        }
+        .product-tab-active {
+            border-bottom-color: #F97316;
+            color: #F97316;
+            font-weight: 600;
+        }
+        .thumbnail-active {
+            outline: 2px solid #F97316;
+            outline-offset: 2px;
+        }
+        .recommendation-carousel::-webkit-scrollbar { height: 8px; }
+        .recommendation-carousel::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .recommendation-carousel::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .recommendation-carousel::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        /* Estilos para as anotações de UX */
+        .annotation {
+            position: absolute;
+            background-color: rgba(30, 64, 175, 0.9);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            width: 280px;
+            font-size: 14px;
+            line-height: 1.5;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .annotation-target:hover .annotation {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .annotation-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 6px;
+            color: #93C5FD;
+        }
+        .annotation-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: #2563EB;
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 5;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+        }
+        .annotation-target {
+            position: relative;
+        }
+    </style>
+</head>
+<body class="bg-gray-200">
+
+    <header class="bg-gray-800 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto">
+            <h1 class="text-2xl font-bold">amazon<span class="text-orange-500">.com.br</span></h1>
+        </div>
+    </header>
+
+    <div class="container mx-auto p-4 md:p-8">
+        <!-- Navegação Principal por Abas -->
+        <div class="flex border-b-2 border-gray-300 mb-6 bg-white rounded-t-lg">
+            <button class="main-tab-button main-tab-active flex-1 py-3 px-4 font-semibold text-gray-600 text-center transition-colors duration-200" onclick="openMainTab(event, 'prototype')">
+                <i class="fas fa-desktop mr-2"></i>Protótipo da Página
+            </button>
+            <button class="main-tab-button flex-1 py-3 px-4 font-semibold text-gray-600 text-center transition-colors duration-200" onclick="openMainTab(event, 'analysis')">
+                <i class="fas fa-magnifying-glass-chart mr-2"></i>Análise de UX/UI
+            </button>
+        </div>
+
+        <!-- Conteúdo das Abas Principais -->
+        <div id="prototype" class="main-tab-content">
+            <!-- O conteúdo do protótipo será injetado aqui pelo JavaScript -->
+        </div>
+
+        <div id="analysis" class="main-tab-content hidden">
+            <!-- O conteúdo da análise será injetado aqui pelo JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        function generateProductContent(prefix, includeAnnotations = false) {
+            return `
+            <div class="bg-white p-4 md:p-8 rounded-xl shadow-lg">
+                <div class="grid grid-cols-1 lg:grid-cols-10 gap-8">
+                    <!-- Coluna da Galeria de Imagens -->
+                    <div class="lg:col-span-4 flex flex-col items-center ${includeAnnotations ? 'annotation-target' : ''}">
+                        ${includeAnnotations ? `
+                            <div class="annotation-dot" style="top: 50%; left: -24px;"></div>
+                            <div class="annotation" style="top: 50%; left: 0; transform: translateY(-50%);">
+                                <span class="annotation-title">Lei de Fitts & Feedback</span>
+                                Miniaturas grandes e próximas da imagem principal facilitam a interação (Fitts). O destaque na miniatura ativa fornece um feedback visual imediato, confirmando a ação do usuário (1ª Heurística de Nielsen).
+                            </div>` : ''}
+                        <img id="main-product-image-${prefix}" src="https://placehold.co/600x600/f3f4f6/333?text=Smartphone+X" alt="Smartphone X - Vista Frontal" class="w-full max-w-sm lg:max-w-full h-auto rounded-lg shadow-md mb-4">
+                        <div id="thumbnail-container" class="flex space-x-2 justify-center">
+                            <img src="https://placehold.co/100x100/f3f4f6/333?text=Frente" alt="Thumbnail - Vista Frontal" class="thumbnail-${prefix} w-16 h-16 object-cover rounded-md cursor-pointer transition-all duration-200 hover:opacity-75 thumbnail-active" onclick="changeImage('${prefix}', this, 'https://placehold.co/600x600/f3f4f6/333?text=Smartphone+X')">
+                            <img src="https://placehold.co/100x100/e5e7eb/333?text=Lado" alt="Thumbnail - Vista Lateral" class="thumbnail-${prefix} w-16 h-16 object-cover rounded-md cursor-pointer transition-all duration-200 hover:opacity-75" onclick="changeImage('${prefix}', this, 'https://placehold.co/600x600/e5e7eb/333?text=Vista+Lateral')">
+                            <img src="https://placehold.co/100x100/d1d5db/333?text=Câmeras" alt="Thumbnail - Câmeras" class="thumbnail-${prefix} w-16 h-16 object-cover rounded-md cursor-pointer transition-all duration-200 hover:opacity-75" onclick="changeImage('${prefix}', this, 'https://placehold.co/600x600/d1d5db/333?text=Câmeras')">
+                            <img src="https://placehold.co/100x100/9ca3af/fff?text=Tela" alt="Thumbnail - Tela" class="thumbnail-${prefix} w-16 h-16 object-cover rounded-md cursor-pointer transition-all duration-200 hover:opacity-75" onclick="changeImage('${prefix}', this, 'https://placehold.co/600x600/9ca3af/fff?text=Tela+Ligada')">
+                        </div>
+                    </div>
+
+                    <!-- Coluna de Informações Essenciais -->
+                    <div class="lg:col-span-6 flex flex-col">
+                        <div class="${includeAnnotations ? 'annotation-target' : ''}">
+                             ${includeAnnotations ? `
+                                <div class="annotation-dot" style="top: 0; left: -24px;"></div>
+                                <div class="annotation" style="top: 0; left: -310px;">
+                                    <span class="annotation-title">Hierarquia Visual</span>
+                                    O título, preço e botões de ação são visualmente dominantes, guiando o olhar do usuário para as informações e ações mais importantes.
+                                </div>` : ''}
+                            <h1 class="text-3xl font-bold text-gray-800 leading-tight">Smartphone X Pro Max 256GB - 5G, Tela 6.7", Câmera Tripla</h1>
+                        </div>
+                        <span class="text-sm text-blue-600 hover:underline cursor-pointer mt-1">Visitar a loja TechNova</span>
+                        <div class="flex items-center my-4 ${includeAnnotations ? 'annotation-target' : ''}">
+                             ${includeAnnotations ? `
+                                <div class="annotation-dot" style="top: 50%; left: -24px; transform: translateY(-50%)"></div>
+                                <div class="annotation" style="top: 50%; left: -310px; transform: translateY(-50%)">
+                                    <span class="annotation-title">Prova Social</span>
+                                    Avaliações e o número de reviews geram confiança e ajudam o usuário a tomar uma decisão de compra mais segura.
+                                </div>` : ''}
+                            <div class="flex text-yellow-500 text-lg"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+                            <span class="text-blue-600 hover:underline ml-3 text-sm">1.287 avaliações</span>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg my-4">
+                            <span class="text-sm text-gray-500">Preço:</span>
+                            <span class="text-4xl font-bold text-red-600 block">R$ 4.999,00</span>
+                            <span class="text-gray-600 text-sm">em até 12x de R$ 416,58 sem juros</span>
+                        </div>
+                        <!-- Opções de Customização -->
+                         <div class="mt-auto pt-6 ${includeAnnotations ? 'annotation-target' : ''}">
+                             ${includeAnnotations ? `
+                                <div class="annotation-dot" style="bottom: 50%; left: -24px;"></div>
+                                <div class="annotation" style="bottom: 50%; left: -310px;">
+                                    <span class="annotation-title">Efeito Von Restorff</span>
+                                    Os botões de ação ("call-to-action") usam cores contrastantes para se destacar, tornando a próxima ação clara para o usuário.
+                                </div>` : ''}
+                            <button class="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-3 rounded-lg transition-transform transform hover:scale-105 shadow-sm">Adicionar ao carrinho</button>
+                            <button class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 mt-3 rounded-lg transition-transform transform hover:scale-105 shadow-sm">Comprar agora</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Abas para Divulgação Progressiva -->
+                <div class="mt-12 border-t pt-6 ${includeAnnotations ? 'annotation-target' : ''}">
+                     ${includeAnnotations ? `
+                        <div class="annotation-dot" style="top: 24px; left: -24px;"></div>
+                        <div class="annotation" style="top: 0; left: 0;">
+                            <span class="annotation-title">Divulgação Progressiva</span>
+                            Informações detalhadas são ocultadas em abas. Isso reduz a carga cognitiva inicial e permite que o usuário explore os detalhes conforme seu interesse.
+                        </div>` : ''}
+                    <div class="flex border-b mb-6">
+                        <button class="product-tab-button-${prefix} product-tab-active py-2 px-6 border-b-2 border-transparent text-gray-500" onclick="openProductTab('${prefix}', event, 'details')">Detalhes do Produto</button>
+                        <button class="product-tab-button-${prefix} py-2 px-6 border-b-2 border-transparent text-gray-500" onclick="openProductTab('${prefix}', event, 'reviews')">Avaliações</button>
+                        <button class="product-tab-button-${prefix} py-2 px-6 border-b-2 border-transparent text-gray-500" onclick="openProductTab('${prefix}', event, 'qa')">Perguntas</button>
+                    </div>
+
+                    <div id="details-${prefix}" class="product-tab-content-${prefix}">${getDetailsContent()}</div>
+                    <div id="reviews-${prefix}" class="product-tab-content-${prefix} hidden">${getReviewsContent()}</div>
+                    <div id="qa-${prefix}" class="product-tab-content-${prefix} hidden">${getQAContent()}</div>
+                </div>
+            </div>
+            
+            <!-- Seção: Comprados Juntos -->
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mt-8">${getFrequentlyBoughtTogetherContent()}</div>
+
+            <!-- Seção: Clientes também viram -->
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mt-8">${getRecommendationsContent()}</div>
+            `;
+        }
+
+        function getDetailsContent() {
+            return `<h3 class="text-xl font-semibold mb-4">Descrição do Produto</h3>
+                <p class="text-gray-700 leading-relaxed">O Smartphone X Pro Max redefine a experiência móvel com seu processador ultrarrápido A20 Bionic, tela Super Retina XDR de 6.7 polegadas e um sistema de câmera tripla que captura fotos e vídeos com qualidade profissional. Com 256GB de armazenamento, você terá espaço de sobra para todos os seus arquivos. Bateria que dura o dia todo e compatibilidade com 5G.</p>
+                <h3 class="text-xl font-semibold mt-6 mb-4">Especificações Técnicas</h3>
+                <ul class="list-disc list-inside text-gray-700 space-y-2">
+                    <li>Tela: 6.7" Super Retina XDR com ProMotion</li>
+                    <li>Processador: Chip A20 Bionic</li>
+                    <li>Câmera: Sistema de câmera Pro de 12 MP (Ultra-angular, Grande-angular e Teleobjetiva)</li>
+                    <li>Armazenamento: 256GB</li>
+                    <li>Bateria: Até 28 horas de reprodução de vídeo</li>
+                </ul>`;
+        }
+
+        function getReviewsContent() {
+            return `<h3 class="text-xl font-semibold mb-4">Avaliações de Clientes (1.287)</h3>
+                <div class="space-y-6">
+                    <div class="border-b pb-4"><div class="flex items-center mb-1"><div class="flex text-yellow-500"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><h4 class="font-bold ml-3">Excelente produto!</h4></div><p class="text-gray-600 text-sm">por João S. em 15 de out. de 2025</p><p class="mt-2 text-gray-700">A câmera é fantástica e a bateria dura muito mais do que meu modelo anterior. Valeu cada centavo.</p></div>
+                    <div class="border-b pb-4"><div class="flex items-center mb-1"><div class="flex text-yellow-500"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></div><h4 class="font-bold ml-3">Muito bom, mas...</h4></div><p class="text-gray-600 text-sm">por Maria P. em 12 de out. de 2025</p><p class="mt-2 text-gray-700">O aparelho é ótimo, muito rápido. A única coisa é que achei um pouco pesado. Fora isso, perfeito.</p></div>
+                </div>`;
+        }
+
+        function getQAContent() {
+            return `<h3 class="text-xl font-semibold mb-4">Perguntas e Respostas</h3>
+                <div class="space-y-6">
+                   <div class="border-b pb-4"><p class="font-semibold text-gray-800">P: Ele vem com carregador e fones de ouvido?</p><p class="mt-1 text-gray-700">R: Olá! Este modelo vem com o cabo de carregamento USB-C, mas o adaptador de tomada e os fones de ouvido são vendidos separadamente.</p></div>
+                   <div class="border-b pb-4"><p class="font-semibold text-gray-800">P: É resistente à água?</p><p class="mt-1 text-gray-700">R: Sim, possui classificação IP68, o que significa que é resistente a respingos, água e poeira.</p></div>
+                </div>`;
+        }
+        
+        function getFrequentlyBoughtTogetherContent() {
+             return `<h2 class="text-2xl font-bold text-gray-800 mb-6">Frequentemente comprados juntos</h2>
+            <div class="flex flex-col md:flex-row items-center gap-4">
+                <div class="flex flex-col items-center text-center"><img src="https://placehold.co/150x150/f3f4f6/333?text=Smartphone+X" class="rounded-lg" alt="Smartphone X"><p class="text-sm mt-2 font-semibold">Este item: R$ 4.999,00</p></div>
+                <i class="fas fa-plus text-2xl text-gray-400"></i>
+                <div class="flex flex-col items-center text-center"><img src="https://placehold.co/150x150/f3f4f6/333?text=Capa+Silicone" class="rounded-lg" alt="Capa de Silicone"><p class="text-sm mt-2">Capa de Silicone</p><p class="font-semibold">R$ 89,90</p></div>
+                <i class="fas fa-plus text-2xl text-gray-400"></i>
+                <div class="flex flex-col items-center text-center"><img src="https://placehold.co/150x150/f3f4f6/333?text=Película" class="rounded-lg" alt="Película de Vidro"><p class="text-sm mt-2">Película de Vidro 3D</p><p class="font-semibold">R$ 59,90</p></div>
+                <div class="md:ml-auto text-center md:text-left mt-6 md:mt-0 border-l md:pl-6"><p class="text-gray-700">Preço total:</p><p class="text-2xl font-bold text-red-600">R$ 5.148,80</p><button class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-2 px-6 mt-3 rounded-lg transition-transform transform hover:scale-105 shadow-sm">Adicionar os 3 ao carrinho</button></div>
+            </div>`;
+        }
+
+        function getRecommendationsContent() {
+            return `<h2 class="text-2xl font-bold text-gray-800 mb-6">Clientes que viram este item também viram</h2>
+            <div class="recommendation-carousel flex space-x-6 overflow-x-auto pb-4">
+                <div class="flex-shrink-0 w-48 text-left"><img src="https://placehold.co/200x200/f3f4f6/333?text=Galaxy+Z" class="rounded-lg w-full h-auto mb-2" alt="Galaxy Z"><a href="#" class="text-blue-600 hover:underline text-sm">Smartphone Galaxy Z Ultra 128GB</a><div class="flex text-yellow-500 mt-1"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></div><p class="font-bold text-lg mt-1">R$ 4.599,00</p></div>
+                <div class="flex-shrink-0 w-48 text-left"><img src="https://placehold.co/200x200/f3f4f6/333?text=Pixel+8" class="rounded-lg w-full h-auto mb-2" alt="Pixel 8"><a href="#" class="text-blue-600 hover:underline text-sm">Celular Pixel 8 Pro 256GB</a><div class="flex text-yellow-500 mt-1"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div><p class="font-bold text-lg mt-1">R$ 5.299,00</p></div>
+                <div class="flex-shrink-0 w-48 text-left"><img src="https://placehold.co/200x200/f3f4f6/333?text=Xiaomi+14" class="rounded-lg w-full h-auto mb-2" alt="Xiaomi 14"><a href="#" class="text-blue-600 hover:underline text-sm">Xiaomi 14 Ultra 512GB</a><div class="flex text-yellow-500 mt-1"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="font-bold text-lg mt-1">R$ 5.999,00</p></div>
+            </div>`;
+        }
+
+        // --- LÓGICA DAS ABAS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('prototype').innerHTML = generateProductContent('proto');
+            document.getElementById('analysis').innerHTML = generateProductContent('analysis', true);
+        });
+
+        function openMainTab(event, tabName) {
+            document.querySelectorAll('.main-tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.main-tab-button').forEach(b => b.classList.remove('main-tab-active'));
+            document.getElementById(tabName).classList.remove('hidden');
+            event.currentTarget.classList.add('main-tab-active');
+        }
+
+        function changeImage(prefix, thumbnailElement, newImageSrc) {
+            document.getElementById(`main-product-image-${prefix}`).src = newImageSrc;
+            document.querySelectorAll(`.thumbnail-${prefix}`).forEach(t => t.classList.remove('thumbnail-active'));
+            thumbnailElement.classList.add('thumbnail-active');
+        }
+
+        function openProductTab(prefix, event, tabName) {
+            document.querySelectorAll(`.product-tab-content-${prefix}`).forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll(`.product-tab-button-${prefix}`).forEach(b => b.classList.remove('product-tab-active'));
+            document.getElementById(`${tabName}-${prefix}`).classList.remove('hidden');
+            event.currentTarget.classList.add('product-tab-active');
+        }
+    </script>
+</body>
+</html>
+
+
